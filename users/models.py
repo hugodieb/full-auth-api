@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser,  PermissionsMixin
 from django.utils import timezone
-from validators.validations import validate_cpf, validate_phone, validate_min_value, validate_max_value
+from .validators.validations import validate_cpf, validate_phone, validate_min_value, validate_max_value
 
 
 class UserAccountManager(BaseUserManager):

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'storages',
     'social_django',
     'users',
+    'financial',
 ]
 
 MIDDLEWARE = [
