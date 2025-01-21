@@ -23,6 +23,8 @@ class UserAccountManager(BaseUserManager):
 
         Subscription.objects.create(user=user, plan_type='BEAR')
 
+        UserProfile.objects.create(user=user)
+
         return user
 
     def create_superuser(self, email, password=None, **kwargs):
@@ -112,6 +114,42 @@ class UserProfile(models.Model):
         ],
         default='beginner'
     )
+
+    risk_profile = models.CharField(
+        max_length=20,
+        choices=[
+            ('conservative', 'Conservador'),
+            ('moderate', 'Moderador'),
+            ('aggressive', 'Agressivo')
+        ],
+        default='moderate'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    email_notifications = models.BooleanField(default=True)
+    sms_notifications = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Perfil do Usuário'
+        verbose_name_plural = 'Perfis dos Usuários'
+
+    def __str__(self):
+        return f"Perfil de {self.user.get_full_name()}"
+        
+    def get_age(self):
+        if self.birth_date:
+            today = timezone.now().date()
+            return today.year - self.birth_date.year - (
+                (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+            )
+        return None
+    
+    def save(self, *args, **kwargs):
+        if self.birth_date and not self.age:
+            self.age = self.get_age()
+        super().save(*args, **kwargs)    
 
 
 class Subscription(models.Model): 
