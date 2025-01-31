@@ -70,6 +70,9 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         return hasattr(self, 'subscription') and self.subscription.is_pro
 
 class UserProfile(models.Model):
+    def avatar_path(instance, filename):
+        return f'avatars/{instance.user.id}/{filename}'
+    
     user = models.OneToOneField(UserAccount, on_delete=models.CASCADE, related_name='profile')
     birth_date = models.DateField(null=True, blank=True)
     age = models.PositiveBigIntegerField(validators=[
@@ -90,7 +93,7 @@ class UserProfile(models.Model):
         null=True,
         blank=True
     )
-    avatar = models.ImageField(upload_to='/avatars/', null=True, blank=True)
+    avatar = models.ImageField(upload_to=avatar_path, null=True, blank=True)
 
     #Informações de endereço
     address = models.CharField(max_length=255, blank=True, null=True)
@@ -149,8 +152,7 @@ class UserProfile(models.Model):
     def save(self, *args, **kwargs):
         if self.birth_date and not self.age:
             self.age = self.get_age()
-        super().save(*args, **kwargs)    
-
+        super().save(*args, **kwargs)
 
 class Subscription(models.Model): 
     PLAN_TYPES = [

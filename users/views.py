@@ -176,7 +176,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     if sms_notifications is not None:
       profile.sms_notifications = sms_notifications
 
-    profile.save
+    profile.save()
 
     return Response({
       'email_notifications': profile.email_notifications,

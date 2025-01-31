@@ -1,4 +1,6 @@
 from django.urls import path, re_path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from .views import (
   CustomProviderAuthView,
@@ -10,7 +12,7 @@ from .views import (
 )
 
 router = DefaultRouter()
-router.register('profile/', UserProfileViewSet, basename='profile')
+router.register('profile', UserProfileViewSet, basename='profile')
 
 urlpatterns = [
   re_path(
@@ -21,5 +23,5 @@ urlpatterns = [
   path('jwt/verify/', CustomTokenVerifyView.as_view()),
   path('logout/', LogoutView.as_view()),
 
-  path('', include(router.urls())),
-]
+  path('', include(router.urls)),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -11,13 +11,21 @@ class UserSerializer(serializers.ModelSerializer):
     read_only_fields = ('id', 'is_active')
 
 class UserProfileSerializer(serializers.ModelSerializer):
-  user = UserProfile(read_only=True)
+  user = serializers.PrimaryKeyRelatedField(read_only=True)
+  first_name = serializers.SerializerMethodField()
+  last_name = serializers.SerializerMethodField()
   full_name = serializers.SerializerMethodField()
 
   class Meta:
     model = UserProfile
     fields = '__all__'
     read_only_fields = ('user', 'created_at', 'updated_ate')
+
+  def get_first_name(self, obj) :
+    return obj.user.first_name if obj.user else None
+  
+  def get_last_name(self, obj) :
+    return obj.user.last_name if obj.user else None
 
   def get_full_name(self, obj):
     return obj.user.get_full_name()
@@ -35,7 +43,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
       
 class UserProfileUpdateSerializer(UserProfileSerializer):
   class Meta(UserProfileSerializer.Meta):
-    read_only_fields = UserProfileSerializer.Meta.read_only_fields + ('avatar')
+    read_only_fields = UserProfileSerializer.Meta.read_only_fields + ('avatar',)
 
 class UserAvatarUpdateSerializer(serializers.ModelSerializer):
   class Meta:

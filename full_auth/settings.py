@@ -1,3 +1,4 @@
+from datetime import timedelta
 from os import getenv, path
 from pathlib import Path
 import sys
@@ -41,8 +42,7 @@ INSTALLED_APPS = [
     'djoser',
     'storages',
     'social_django',
-    'users',
-    'financial',
+    'users',    
 ]
 
 MIDDLEWARE = [
@@ -197,8 +197,15 @@ DJOSER = {
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': getenv('REDIRECT_URLS').split(',')   
 }
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),  # 30 minutos
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # 7 dias
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+}
+
 AUTH_COOKIE = 'access'
-AUTH_COOKIE_ACCESS_MAX_AGE = 60 * 5
+AUTH_COOKIE_ACCESS_MAX_AGE = 60 * 60 * 2
 AUTH_COOKIE_REFRESH_MAX_AGE = 60 * 60 * 24
 AUTH_COOKIE_SECURE = getenv('AUTH_COOKIE_SECURE', 'True') == True
 AUTH_COOKIE_HTTP_ONLY = True
