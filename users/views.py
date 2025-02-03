@@ -129,9 +129,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
   
   def get_serializer_class(self, *args, **kwargs):
     if self.action == 'update' or self.action == 'partial_update':
-      return UserProfileUpdateSerializer
-    if self.action == 'update_avatar':
-      return UserAvatarUpdateSerializer
+      return UserProfileUpdateSerializer   
     
     return UserProfileSerializer
   
@@ -141,9 +139,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     return Response(serializer.data)
   
   @action(detail=False, methods=['post'], parser_classes=[MultiPartParser, FormParser])
-  def update_avatar(self, request):
+  def update_avatar(self, request):    
     profile = get_object_or_404(UserProfile, user=request.user)
-    serializer = UserAvatarUpdateSerializer(profile, data=request.data)
+    serializer = UserAvatarUpdateSerializer(profile, data=request.data, partial=True)
 
     if serializer.is_valid():
       if profile.avatar:

@@ -1,3 +1,4 @@
+from datetime import date
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UserProfile
@@ -37,9 +38,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
   
   def validate_birth_date(self, value):
     if value:
-      age = UserProfile.get_age(value)
-      if age < 18:
-        raise serializers.ValidationError("O usuário deve ter pelo menos 18 anos de idade.")
+      today = date.today()
+      age = today.year -value.year - ((today.month, today.day) < (value.month, value.day))
+      return value
+    return None
+      
       
 class UserProfileUpdateSerializer(UserProfileSerializer):
   class Meta(UserProfileSerializer.Meta):
@@ -48,4 +51,4 @@ class UserProfileUpdateSerializer(UserProfileSerializer):
 class UserAvatarUpdateSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserProfile
-    fields = ('avatar')
+    fields = ('avatar',)
