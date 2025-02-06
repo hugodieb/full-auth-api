@@ -24,4 +24,4 @@ urlpatterns = [
   path('logout/', LogoutView.as_view()),
 
   path('', include(router.urls)),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] 

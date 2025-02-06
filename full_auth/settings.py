@@ -23,7 +23,7 @@ DEVELOPMENT_MODE = getenv('DEVELOPMENT_MODE', 'False') == 'True'
 SECRET_KEY = getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = getenv("DEBUGG", "False") == "True"
+DEBUG = getenv("DEBUG", "False").lower() in ("true", "1", "yes")
 
 ALLOWED_HOSTS = getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
@@ -141,7 +141,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-MEDIA_URL = '/mdeia'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = path.join(BASE_DIR, 'media')
 
 
