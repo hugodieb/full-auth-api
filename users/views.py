@@ -138,7 +138,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer = self.get_serializer(profile)
     return Response(serializer.data)
   
-  @action(detail=False, methods=['post'], parser_classes=[MultiPartParser, FormParser] )
+  @action(detail=False, methods=['post', 'patch'], parser_classes=[MultiPartParser, FormParser] )
   def update_avatar(self, request):    
     profile = get_object_or_404(UserProfile, user=request.user)
     serializer = UserAvatarUpdateSerializer(profile, data=request.data, partial=True, context={"request": request})

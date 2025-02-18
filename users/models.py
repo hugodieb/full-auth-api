@@ -74,6 +74,7 @@ class UserProfile(models.Model):
         return f'avatars/{instance.user.id}/{filename}'
     
     user = models.OneToOneField(UserAccount, on_delete=models.CASCADE, related_name='profile')
+    cpf = models.CharField(max_length=11, unique=True,)
     birth_date = models.DateField(null=True, blank=True)
     age = models.PositiveBigIntegerField(validators=[
         validate_min_value(18),
@@ -171,11 +172,8 @@ class Subscription(models.Model):
     next_payment_date = models.DateTimeField(null=True, blank=True)
 
     def is_pro(self):
-        return (
-            self.plan_type == 'BULL' or self.plan_type == 'WOLF' and
-            self.is_active and
-            (self.end_date is None or self.end_date > timezone.now())
-        )
+        return self.plan_type in ['BULL', 'WOLF'] and self.is_active and (self.end_date is None or self.end_date > timezone.now())
+
 
 
 

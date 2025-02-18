@@ -8,12 +8,29 @@ def validate_phone(value):
     )
   return phone_regex
   
-def validate_cpf(value):
-  cpf_regex = RegexValidator(
-        regex=r'^\d{3}\.\d{3}\.\d{3}-\d{2}$',
-        message="Use o formato 000.000.000-00.."
-    )
-  return cpf_regex
+def validate_cpf(cpf):
+  
+  cpf = re.sub(r'[^0-9]', '', str(cpf))  
+
+  if len(cpf) != 11:
+    return False
+  
+  if cpf == cpf[0] * 11:
+    return False
+  
+  soma = 0
+  for i in range(9):
+    soma += int(cpf[i]) * (10 - i)
+  resto = soma % 11
+  first_digit = 0 if resto < 2 else 11 - resto
+
+  soma = 0
+  for i in range(10):
+    soma += int(cpf[i]) * (11 - i)
+  resto = soma % 11
+  second_digit = 0 if resto < 2 else 11 - resto
+
+  return int(cpf[9]) == first_digit and int(cpf[10]) == second_digit
   
 def validate_min_value(value):
   return MinValueValidator(value)

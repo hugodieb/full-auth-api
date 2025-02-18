@@ -1,7 +1,9 @@
 from datetime import date
+import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UserProfile
+from .validators.validations import validate_cpf
 
 User = get_user_model()
 
@@ -13,20 +15,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
   user = serializers.PrimaryKeyRelatedField(read_only=True)
-  first_name = serializers.SerializerMethodField()
-  last_name = serializers.SerializerMethodField()
+  first_name = serializers.CharField(source="user.first_name", required=False)
+  last_name = serializers.CharField(source="user.last_name", required=False)
   full_name = serializers.SerializerMethodField()
 
   class Meta:
     model = UserProfile
     fields = '__all__'
-    read_only_fields = ('user', 'created_at', 'updated_ate')
+    read_only_fields = ('user', 'created_at', 'update_at')
 
-  def get_first_name(self, obj) :
-    return obj.user.first_name if obj.user else None
-  
-  def get_last_name(self, obj) :
-    return obj.user.last_name if obj.user else None
+  def validate_cpf(self, value):       
+        
+        try:
+            is_valid = validate_cpf(value)            
+            if not is_valid:
+                raise serializers.ValidationError("CPF inválido.")
+            return value
+        except Exception as e:            
+            raise serializers.ValidationError(f"Erro ao validar CPF: {str(e)}")  
 
   def get_full_name(self, obj):
     return obj.user.get_full_name()
@@ -42,7 +48,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
       age = today.year -value.year - ((today.month, today.day) < (value.month, value.day))
       return value
     return None
-      
+  
+  def update(self, instance, validated_data):     
+     user_data = validated_data.pop("user", {})
+     
+     if user_data:
+        for attr, value in user_data.items():           
+           setattr(instance.user, attr, value)
+        instance.user.save()
+
+     return super().update(instance, validated_data)      
       
 class UserProfileUpdateSerializer(UserProfileSerializer):
   class Meta(UserProfileSerializer.Meta):
